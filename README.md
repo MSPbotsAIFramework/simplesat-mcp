@@ -47,8 +47,10 @@ Missing the header returns `401`:
 }
 ```
 
-An invalid key surfaces as a tool-level error (e.g. `HTTP 403: {"detail":
-"Invalid Token."}`), not an HTTP-level error from this server.
+An invalid key surfaces as a tool-level structured error envelope (e.g.
+`{"error":{"code":"unauthorized","message":"Invalid Token.","retryable":false}}`),
+not an HTTP-level error from this server — see the error envelope format
+under **Tool List** below.
 
 ## Environment Variables
 
@@ -61,15 +63,24 @@ An invalid key surfaces as a tool-level error (e.g. `HTTP 403: {"detail":
 ## MCP Endpoint
 
 - `POST /mcp` — MCP protocol (streamable HTTP transport)
-- `GET /health` — health check, returns `{"status": "ok", "service": "simplesat-mcp", "transport": "http"}`
+- `GET /health` — health check, pure local probe (does not depend on the Simplesat API), returns `{"status": "ok"}`
 
 ## Tool List
 
 | Tool | 功能 | 参数 |
 |---|---|---|
-| `simplesat_search_answers` | 搜索问卷调查回答（CSAT/NPS 评分与评论） | `page`、`page_size`、`start_date`、`end_date`、`filter_key`、`filter_values`、`filter_comparison`（均可选） |
+| `simplesat_search_answers` | 搜索问卷调查回答（CSAT/NPS 评分与评论），只读 | `page`、`page_size`（默认/上限 100，见下）、`start_date`、`end_date`、`filter_key`、`filter_values`、`filter_comparison`（均可选） |
 
-Responses are the vendor's raw JSON, pretty-printed, returned as-is.
+- `page_size` is clamped server-side to Simplesat's own documented maximum of
+  **100** records per page (stricter than it might otherwise be) — values
+  above 100 are silently capped rather than rejected upstream.
+- Responses are compact JSON (no pretty-printing, `ensure_ascii=False`), and
+  are truncated with `truncated`/`original_count` markers if a result would
+  exceed ~20,000 characters.
+- Errors are returned as a structured envelope, not a plain string:
+  `{"error": {"code": "...", "message": "...", "retryable": true|false}}`.
+  `code` is one of `not_configured` / `unauthorized` / `not_found` /
+  `invalid_argument` / `rate_limited` / `upstream_error`.
 
 ## 测试示例
 
@@ -104,8 +115,11 @@ response (`{"next": null, "previous": null, "count": 0, "answers": []}`)
 confirmed as a genuine empty result (not an auth failure) since the
 response shape exactly matches the vendor's documented schema. A
 separate test with a deliberately invalid API key correctly surfaced
-`Error: Simplesat API error: HTTP 403: {"detail": "Invalid Token."}`,
-confirming the auth failure path works as expected.
+the structured error envelope
+`{"error":{"code":"unauthorized","message":"Invalid Token.","retryable":false}}`,
+confirming the auth failure path works as expected (re-verified 2026-08-19
+after the error format was changed from a plain string to this structured
+envelope).
 
 ## API Reference
 

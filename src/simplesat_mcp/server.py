@@ -76,6 +76,19 @@ def create_mcp_server(settings: Settings) -> FastMCP:
     # correctly behind a reverse proxy or docker network.
     mcp = FastMCP(
         name="simplesat-mcp",
+        instructions=(
+            "Simplesat is a CSAT/NPS customer-satisfaction survey platform MSPs use "
+            "to collect and analyze feedback from their own clients — ratings, "
+            "sentiment, and free-text comments tied to specific surveys and metrics. "
+            "This server exposes one read-only tool, simplesat_search_answers, for "
+            "querying submitted survey answers. Call it with no arguments to list "
+            "recent answers, or narrow results with a date range (start_date/"
+            "end_date) and/or a single filter (filter_key + filter_values + "
+            "filter_comparison) on choice_value, comment, metric, sentiment, or "
+            "survey. Use this for questions like 'what's our recent CSAT/NPS "
+            "feedback', 'show negative-sentiment responses this month', or 'find "
+            "comments mentioning X'."
+        ),
         transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
     )
 
