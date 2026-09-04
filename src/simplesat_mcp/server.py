@@ -90,6 +90,8 @@ def create_mcp_server(settings: Settings) -> FastMCP:
             "comments mentioning X'."
         ),
         transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
+        stateless_http=True,
+        json_response=True,
     )
 
     client_factory: Callable[[], SimplesatClient | None] = lambda: get_client_from_context(settings)
