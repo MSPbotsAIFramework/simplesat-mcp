@@ -103,11 +103,11 @@ X-Simplesat-Token: <api key>
 Already fully stateless by the vendor's own design; nothing is cached
 across MCP calls.
 
-### HEADER 授权参数说明
+### HEADER Authorization Parameters
 
-| Header | 类型 | 是否必填 | 默认值 | 枚举值 | 字段描述 | Example |
+| Header | Type | Required | Default | Allowed values | Description | Example |
 |---|---|---|---|---|---|---|
-| `X-Simplesat-Api-Key` | string | 是 | 无 | 无 | Simplesat API Key（Account Settings -> API Keys 生成），原样转发为上游 `X-Simplesat-Token` 请求头 | `ssat_170927_a1b2c3d4e5f6g7h8i9j0` |
+| `X-Simplesat-Api-Key` | string | Yes | None | None | Simplesat API Key (generated at Account Settings -> API Keys), forwarded as-is as the upstream `X-Simplesat-Token` request header | `ssat_170927_a1b2c3d4e5f6g7h8i9j0` |
 
 Missing the header returns `401`:
 ```json
@@ -126,11 +126,11 @@ under **Tool List** below.
 
 ## Environment Variables
 
-| Variable | 类型 | 是否必填 | 默认值 | 说明 |
+| Variable | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `MCP_HTTP_PORT` | int | 否 | `8080` | HTTP 监听端口 |
-| `MCP_HTTP_HOST` | string | 否 | `0.0.0.0` | HTTP 监听地址 |
-| `SIMPLESAT_BASE_URL` | string | 否 | `https://api.simplesat.io` | Simplesat API 基础 URL |
+| `MCP_HTTP_PORT` | int | No | `8080` | HTTP listen port |
+| `MCP_HTTP_HOST` | string | No | `0.0.0.0` | HTTP listen address |
+| `SIMPLESAT_BASE_URL` | string | No | `https://api.simplesat.io` | Simplesat API base URL |
 
 ## MCP Endpoint
 
@@ -139,9 +139,9 @@ under **Tool List** below.
 
 ## Tool List
 
-| Tool | 功能 | 参数 |
+| Tool | Description | Parameters |
 |---|---|---|
-| `simplesat_search_answers` | 搜索问卷调查回答（CSAT/NPS 评分与评论），只读 | `page`、`page_size`（默认/上限 100，见下）、`start_date`、`end_date`、`filter_key`、`filter_values`、`filter_comparison`（均可选） |
+| `simplesat_search_answers` | Search survey answers (CSAT/NPS scores and comments), read-only | `page`, `page_size` (default/max 100, see below), `start_date`, `end_date`, `filter_key`, `filter_values`, `filter_comparison` (all optional) |
 
 - `page_size` is clamped server-side to Simplesat's own documented maximum of
   **100** records per page (stricter than it might otherwise be) — values
@@ -154,7 +154,7 @@ under **Tool List** below.
   `code` is one of `not_configured` / `unauthorized` / `not_found` /
   `invalid_argument` / `rate_limited` / `upstream_error`.
 
-## 测试示例
+## Test Example
 
 ```bash
 # Health check
